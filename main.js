@@ -63,11 +63,35 @@ class Tree {
   constructor(arr) {
     this.root = buildTree(arr);
   }
+
+  insert(value) {
+    const result = this.#insertRec(this.root, value);
+  }
+
+  #insertRec(root, value) {
+    /*
+     * If the tree is empty, return a new node
+     */
+    if (root == null) {
+      root = new Node(value);
+      return root;
+    }
+
+    /* Otherwise, recur down the tree */
+    if (value < root.data) root.left = this.#insertRec(root.left, value);
+    else if (value > root.data) root.right = this.#insertRec(root.right, value);
+
+    /* return the (unchanged) node pointer */
+    return root;
+  }
+
+  delete(value) {}
 }
 
 function buildTree(arr) {
   const sortedArray = mergeSort(arr);
-  return sortedArrayToBST(sortedArray, 0, sortedArray.lenght - 1);
+  console.log(sortedArray);
+  return sortedArrayToBST(sortedArray, 0, sortedArray.length - 1);
 }
 
 function sortedArrayToBST(arr, start, end) {
@@ -103,3 +127,12 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
 };
 
 const arr = [1, 2, 3, 4, 5, 6, 7];
+
+const BST = new Tree(arr);
+prettyPrint(BST.root);
+BST.insert(8);
+prettyPrint(BST.root);
+BST.insert(9);
+prettyPrint(BST.root);
+BST.insert(-2);
+prettyPrint(BST.root);
