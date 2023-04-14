@@ -1,6 +1,54 @@
 "use strict";
 
-const arr = [1, 2, 3, 4, 5, 6];
+class Node {
+  constructor(d) {
+    this.data = d;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+function merge(left, right) {
+  const newArr = [];
+  const totalLength = left.length + right.length;
+  let leftIndex = 0;
+  let rightIndex = 0;
+
+  for (let k = 0; k < totalLength; k++) {
+    if (left[leftIndex] > right[rightIndex]) {
+      newArr.push(right[rightIndex]);
+      rightIndex++;
+      if (rightIndex === right.length) {
+        newArr.push(...left.slice(leftIndex));
+        return newArr;
+      }
+    } else {
+      newArr.push(left[leftIndex]);
+      leftIndex++;
+      if (leftIndex === left.length) {
+        newArr.push(...right.slice(rightIndex));
+        return newArr;
+      }
+    }
+  }
+  return newArr;
+}
+
+function mergeSort(array) {
+  if (array.length < 2) {
+    return array;
+  } else {
+    const halfIndex = Math.floor(array.length / 2);
+
+    const leftHalf = array.slice(0, halfIndex);
+    const rightHalf = array.slice(halfIndex);
+
+    const leftHalfSorted = mergeSort(leftHalf);
+    const rightHalfSorted = mergeSort(rightHalf);
+
+    return merge(leftHalfSorted, rightHalfSorted);
+  }
+}
 
 // find middle and make it root, then perform the same operation
 // on the lft subarray for the roots left child
@@ -11,15 +59,16 @@ const arr = [1, 2, 3, 4, 5, 6];
 // Get the middle of the left half and make it the left child of the root created in step 1.
 // Get the middle of the right half and make it the right child of the root created in step 1.
 
-class Node {
-  constructor(d) {
-    this.data = d;
-    this.left = null;
-    this.right = null;
+class Tree {
+  constructor(arr) {
+    this.root = buildTree(arr);
   }
 }
 
-let root = null;
+function buildTree(arr) {
+  const sortedArray = mergeSort(arr);
+  return sortedArrayToBST(sortedArray, 0, sortedArray.lenght - 1);
+}
 
 function sortedArrayToBST(arr, start, end) {
   // Base case
@@ -38,7 +87,7 @@ function sortedArrayToBST(arr, start, end) {
   return node;
 }
 
-const arr1 = [1, 2, 3, 4, 5, 6, 7];
+// JUST FOR PRINTING
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
   if (node === null) {
@@ -53,5 +102,4 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 
-const rootNode = sortedArrayToBST(arr1, 0, arr1.length - 1);
-prettyPrint(rootNode);
+const arr = [1, 2, 3, 4, 5, 6, 7];
