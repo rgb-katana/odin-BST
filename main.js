@@ -14,7 +14,7 @@ function merge(left, right) {
   let leftIndex = 0;
   let rightIndex = 0;
 
-  for (let k = 0; k < totalLength; k++) {
+  for (let value = 0; value < totalLength; value++) {
     if (left[leftIndex] > right[rightIndex]) {
       newArr.push(right[rightIndex]);
       rightIndex++;
@@ -85,7 +85,112 @@ class Tree {
     return root;
   }
 
-  delete(value) {}
+  find(root, value) {
+    if (root.data === value) return root;
+
+    if (root.data > value) {
+      root.left = this.find(root.left, value);
+      return root.left;
+    } else if (root.data < value) {
+      root.right = this.find(root.right, value);
+      return root.right;
+    }
+  }
+
+  deleteNode(root, value) {
+    // Base case
+    if (root == null) return root;
+
+    // Recursive calls for ancestors of
+    // node to be deleted
+    if (root.data > value) {
+      root.left = this.deleteNode(root.left, value);
+      return root;
+    } else if (root.data < value) {
+      root.right = this.deleteNode(root.right, value);
+      return root;
+    }
+
+    // We reach here when root is the node
+    // to be deleted.
+
+    // If one of the children is empty
+    if (root.left == null) {
+      let temp = root.right;
+      return temp;
+    } else if (root.right == null) {
+      let temp = root.left;
+      return temp;
+    }
+
+    // If both children exist
+    else {
+      let succParent = root;
+
+      // Find successor
+      let succ = root.right;
+
+      while (succ.left != null) {
+        succParent = succ;
+        succ = succ.left;
+      }
+
+      // Delete successor. Since successor
+      // is always left child of its parent
+      // we can safely make successor's right
+      // right child as left of its parent.
+      // If there is no succ, then assign
+      // succ->right to succParent->right
+      if (succParent != root) succParent.left = succ.right;
+      else succParent.right = succ.right;
+
+      // Copy Successor Data to root
+      root.data = succ.data;
+
+      return root;
+    }
+  }
+
+  levelOrder(root, func = null) {
+    const queue = [root];
+    const result = [];
+    if (func === null) {
+      return this.#levelOrderRecNoFunc(root, queue, result);
+    }
+    return this.#levelOrderRec(root, queue, func);
+  }
+
+  #levelOrderRecNoFunc(root, queue, result) {
+    if (root.data === null) return null;
+    result.push(queue[0]);
+    if (root.left !== null) {
+      queue.push(root.left);
+    }
+    if (root.right !== null) {
+      queue.push(root.right);
+    }
+
+    queue.shift();
+    if (!queue[0]) return result;
+    this.#levelOrderRecNoFunc(queue[0], queue, result);
+    return result;
+  }
+
+  #levelOrderRec(root, queue, func) {
+    if (root.data === null) return null;
+
+    func(queue[0]);
+    if (root.left !== null) {
+      queue.push(root.left);
+    }
+    if (root.right !== null) {
+      queue.push(root.right);
+    }
+
+    queue.shift();
+    if (!queue[0]) return;
+    this.#levelOrderRec(queue[0], queue, func);
+  }
 }
 
 function buildTree(arr) {
@@ -136,3 +241,10 @@ BST.insert(9);
 prettyPrint(BST.root);
 BST.insert(-2);
 prettyPrint(BST.root);
+BST.deleteNode(BST.root, 1);
+prettyPrint(BST.root);
+BST.deleteNode(BST.root, 2);
+prettyPrint(BST.root);
+// console.log(BST.find(BST.root, 8));
+BST.levelOrder(BST.root, console.log);
+console.log(BST.levelOrder(BST.root));
