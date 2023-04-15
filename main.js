@@ -162,7 +162,7 @@ class Tree {
 
   #levelOrderRecNoFunc(root, queue, result) {
     if (root.data === null) return null;
-    result.push(queue[0]);
+    result.push(queue[0].data);
     if (root.left !== null) {
       queue.push(root.left);
     }
@@ -191,6 +191,125 @@ class Tree {
     if (!queue[0]) return;
     this.#levelOrderRec(queue[0], queue, func);
   }
+
+  #inorderRecNoFunc(root, result) {
+    if (root !== null) {
+      this.#inorderRecNoFunc(root.left, result);
+      result.push(root.data);
+      this.#inorderRecNoFunc(root.right, result);
+    }
+    return result;
+  }
+
+  #inorderRec(root, func) {
+    if (root !== null) {
+      this.#inorderRec(root.left, func);
+      func(root.data);
+      this.#inorderRec(root.right, func);
+    }
+  }
+
+  inorder(func = null) {
+    const result = [];
+    if (!func) {
+      this.#inorderRecNoFunc(this.root, result);
+      return result;
+    } else {
+      this.#inorderRec(this.root, func);
+    }
+  }
+
+  #preorderRecNoFunc(root, result) {
+    if (root !== null) {
+      result.push(root.data);
+      this.#preorderRecNoFunc(root.left, result);
+      this.#preorderRecNoFunc(root.right, result);
+    }
+    return result;
+  }
+
+  #preorderRec(root, func) {
+    if (root !== null) {
+      func(root.data);
+      this.#preorderRec(root.left, func);
+      this.#preorderRec(root.right, func);
+    }
+  }
+
+  preorder(func = null) {
+    const result = [];
+    if (!func) {
+      this.#preorderRecNoFunc(this.root, result);
+      return result;
+    } else {
+      this.#preorderRec(this.root, func);
+    }
+  }
+
+  #postorderRecNoFunc(root, result) {
+    if (root !== null) {
+      this.#postorderRecNoFunc(root.left, result);
+      this.#postorderRecNoFunc(root.right, result);
+      result.push(root.data);
+    }
+    return result;
+  }
+
+  #postorderRec(root, func) {
+    if (root !== null) {
+      this.#postorderRec(root.left, func);
+      this.#postorderRec(root.right, func);
+      func(root.data);
+    }
+  }
+
+  postorder(func = null) {
+    const result = [];
+    if (!func) {
+      this.#postorderRecNoFunc(this.root, result);
+      return result;
+    } else {
+      this.#postorderRec(this.root, func);
+    }
+  }
+
+  height(root) {
+    if (root === null) return 0;
+
+    let lHeight = this.height(root.left);
+    let rHeight = this.height(root.right);
+
+    if (lHeight > rHeight) {
+      return lHeight + 1;
+    } else {
+      return rHeight + 1;
+    }
+  }
+
+  depth(node, root, depth = 0) {
+    if (root === null || node === null) return;
+    // if (node === root) return depth;
+    if (node === root) return `Depth: ${depth}`;
+    if (node.data < root.data) {
+      return this.depth(node, root.left, (depth += 1));
+    } else {
+      return this.depth(node, root.right, (depth += 1));
+    }
+  }
+
+  isBalanced(root) {
+    const lHeight = this.height(root.left);
+    const rHeight = this.height(root.right);
+    const diff = Math.abs(lHeight - rHeight);
+    return diff < 2 ? "true" : "false";
+  }
+
+  rebalance(root) {
+    console.log("HERE");
+    let arr = this.levelOrder(root);
+    console.log(arr);
+    return (this.root = buildTree(arr));
+  }
 }
 
 function buildTree(arr) {
@@ -206,7 +325,7 @@ function sortedArrayToBST(arr, start, end) {
   }
   /* Get the middle element and make it root */
   const mid = parseInt((start + end) / 2);
-  console.log(mid);
+  // console.log(mid)
   const node = new Node(arr[mid]);
   // Recursively constuct the left subtree and make it left child of root
   node.left = sortedArrayToBST(arr, start, mid - 1);
@@ -247,4 +366,11 @@ BST.deleteNode(BST.root, 2);
 prettyPrint(BST.root);
 // console.log(BST.find(BST.root, 8));
 BST.levelOrder(BST.root, console.log);
-console.log(BST.levelOrder(BST.root));
+// console.log(BST.levelOrder(BST.root));
+// console.log(BST.inorder());
+// console.log(BST.preorder());
+// console.log(BST.postorder());
+// console.log(BST.height(BST.root));
+prettyPrint(BST.root);
+BST.rebalance(BST.root);
+prettyPrint(BST.root);
